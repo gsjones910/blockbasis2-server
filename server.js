@@ -5,7 +5,7 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-    origin: 'https://scan.blockbasis.com'
+    origin: ['https://scan.blockbasis.com', 'https://walletscanner.com']
     // origin: '*'
 }));
 
@@ -17,7 +17,7 @@ app.post('/api/beehiiv_getByEmail', async (req, res) => {
     const client = new BeehiivClient({ token: token });
     const response = await client.subscriptions.getByEmail(publicationId, userEmail);
 
-    const isPremium = response.data.subscriptionPremiumTierNames.includes('Premium');
+    const isPremium = response.data.subscriptionPremiumTierNames.includes('Premium Subscription');
 
     res.json({ isPremium: isPremium });
 });
