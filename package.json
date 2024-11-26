@@ -10,11 +10,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^0.27.2",
-    "puppeteer": "^15.5.0",
-    "puppeteer-core": "^23.7.1",
     "@beehiiv/sdk": "^0.1.4",
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "puppeteer": "^23.9.0",
+    "puppeteer-core": "^23.7.1"
   }
 }

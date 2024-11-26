@@ -103,13 +103,28 @@ app.get('/api/get_certik', async (req, res) => {
 
     let certikData = []
 
-    for (let i = 0; i < 4000; i+= 50) {
-        const url = certikURL + i;
-        var result = await getDataNN(url)
-        if (result) {
-            certikData = certikData.concat(result.items)
+    const browser = await puppeteer.launch();
+
+    try {
+        const page = await browser.newPage();
+
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36');
+
+        await page.goto('https://skynet.certik.com/leaderboards/security', { waitUntil: 'domcontentloaded', timeout: 10000 });
+
+        for (let i = 0; i < 4000; i+= 50) {
+            const url = certikURL + i;
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+            const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+            if (data) {
+                certikData = certikData.concat(data.items)
+            }
         }
+    } catch (error) {
+        console.log(error)
     }
+
+    await browser.close();
 
     res.json({ data: certikData });
 });
