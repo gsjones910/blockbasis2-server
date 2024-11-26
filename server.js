@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const puppeteer = require('puppeteer');
 const { BeehiivClient } = require('@beehiiv/sdk');
 const app = express();
 const port = 3000;
