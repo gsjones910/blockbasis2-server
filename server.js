@@ -44,11 +44,11 @@ app.get('/api/get_defisafety', async (req, res) => {
     ]
 
     let defisafetyData = []
-    
+
     for (const defisafetyURL of defisafetyURLs) {
-        var res = await getData(defisafetyURL)
-        if (res) {
-            defisafetyData = defisafetyData.concat(res.data)
+        var result = await getData(defisafetyURL)
+        if (result) {
+            defisafetyData = defisafetyData.concat(result.data)
         }
     }
 
