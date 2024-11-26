@@ -23,7 +23,6 @@ app.post('/api/beehiiv_getByEmail', async (req, res) => {
     res.json({ isPremium: isPremium });
 });
 
-
 async function getData(url) {
     try {
         const result = await axios({ method: "get", url: url, headers: {
@@ -35,7 +34,6 @@ async function getData(url) {
         return null;
     }
 }
-
 
 app.get('/api/get_defisafety', async (req, res) => {
     const defisafetyURLs = [
