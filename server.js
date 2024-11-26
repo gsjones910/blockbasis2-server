@@ -35,6 +35,24 @@ async function getData(url) {
     }
 }
 
+async function getDataNN(url) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36');
+
+    try {
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: 120000 });
+        const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+        await browser.close();
+        return data;
+    } catch (error) {
+        console.log(error)
+        await browser.close();
+        return null;
+    }
+}
+
 app.get('/api/get_defisafety', async (req, res) => {
     const defisafetyURLs = [
         "https://www.defisafety.com/api/pqrs?offset=0&order=DESC&orderBy=default&status=Active&title=",
@@ -58,7 +76,7 @@ app.get('/api/get_defillama', async (req, res) => {
 
     let defillamaData = []
 
-    var defillamaRes = await getData(defillamaURL)
+    var defillamaRes = await getDataNN(defillamaURL)
     if (defillamaRes) {
         defillamaData = defillamaRes.pageProps.data
     }
