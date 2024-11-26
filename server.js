@@ -72,6 +72,19 @@ app.get('/api/get_defisafety', async (req, res) => {
     res.json({ data: defisafetyData });
 });
 
+app.get('/api/get_defi', async (req, res) => {
+    const defiURL = "https://api.de.fi/v1/rekt/list?sortField=fundsLost&sort=desc&sortDirection=desc&limit=4000&page=0"
+
+    let defiData = []
+
+    var defiRes = await getData(defiURL)
+    if (defiRes) {
+        defiData = defiRes.items
+    }
+
+    res.json({ data: defiData });
+});
+
 app.get('/api/get_defillama', async (req, res) => {
     const defillamaURL = "https://defillama.com/_next/data/0.1766176428499524/hacks.json"
 
