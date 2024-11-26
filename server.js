@@ -55,6 +55,19 @@ app.get('/api/get_defisafety', async (req, res) => {
     res.json({ data: defisafetyData });
 });
 
+app.get('/api/get_defillama', async (req, res) => {
+    const defillamaURL = "https://defillama.com/_next/data/0.8800473118002543/hacks.json"
+
+    let defillamaData = []
+
+    var defillamaRes = await getData(defillamaURL)
+    if (defillamaRes) {
+        defillamaData = defillamaRes.pageProps.data
+    }
+
+    res.json({ data: defillamaData });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
