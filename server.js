@@ -43,6 +43,8 @@ app.get('/api/get_defisafety', async (req, res) => {
         "https://www.defisafety.com/api/pqrs?offset=20&order=DESC&orderBy=default&status=Active&title="
     ]
 
+    let defisafetyData = []
+    
     for (const defisafetyURL of defisafetyURLs) {
         var res = await getData(defisafetyURL)
         if (res) {
