@@ -98,6 +98,22 @@ app.get('/api/get_defillama', async (req, res) => {
     res.json({ data: defillamaData });
 });
 
+app.get('/api/get_certik', async (req, res) => {
+    const certikURL = "https://skynet.certik.com/api/leaderboard-all-projects/query-leaderboard-projects?isClientOnly=true&limit=50&skip="
+
+    let certikData = []
+
+    for (let i = 0; i < 4000; i+= 50) {
+        const url = certikURL + i;
+        var res = await getDataNN(url)
+        if (res) {
+            certikData = certikData.concat(res.items)
+        }
+    }
+
+    res.json({ data: certikData });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
