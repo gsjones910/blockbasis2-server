@@ -105,9 +105,9 @@ app.get('/api/get_certik', async (req, res) => {
 
     for (let i = 0; i < 4000; i+= 50) {
         const url = certikURL + i;
-        var res = await getDataNN(url)
-        if (res) {
-            certikData = certikData.concat(res.items)
+        var result = await getDataNN(url)
+        if (result) {
+            certikData = certikData.concat(result.items)
         }
     }
 
