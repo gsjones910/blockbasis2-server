@@ -110,7 +110,7 @@ app.get('/api/get_certik', async (req, res) => {
 
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36');
 
-        await page.goto('https://skynet.certik.com/leaderboards/security', { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
 
         for (let i = 0; i < 4000; i+= 50) {
             const url = certikURL + i;
