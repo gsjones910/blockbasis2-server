@@ -86,7 +86,7 @@ app.get('/api/get_defi', async (req, res) => {
 });
 
 app.get('/api/get_defillama', async (req, res) => {
-    const defillamaURL = "https://defillama.com/_next/data/0.1766176428499524/hacks.json"
+    const defillamaURL = "https://defillama.com/_next/data/0.5771133567931961/hacks.json"
 
     let defillamaData = []
 
