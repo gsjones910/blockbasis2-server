@@ -18,7 +18,53 @@ const links_defillama = JSON.parse(linksData_defillama);
 const old_data = fs.readFileSync('./result/data.json');
 var oldData = JSON.parse(old_data);
 
+const defimetadataPromises = links_defi
+  .filter(defi => defi.proof_link && defi.proof_link !== null)
+  .map(async (defi) => {
+    try {
+      const metaData = await getMetaData(defi.proof_link);
+      return {
+        proof_link: defi.proof_link,
+        image: metaData.image
+      };
+    } catch (error) {
+      return {
+        proof_link: defi.proof_link,
+        image: ""
+      };
+    }
+  });
+
+const defillamametadataPromises = links_defillama
+  .filter(defillama => defillama.link && defillama.link !== null)
+  .map(async (defillama) => {
+    try {
+      const metaData = await getMetaData(defillama.link);
+      return {
+        link: defillama.link,
+        image: metaData.image
+      };
+    } catch (error) {
+      return {
+        link: defillama.link,
+        image: ""
+      };
+    }
+  });
+
 async function makingData() {
+  const defimetadataResults = await Promise.all(defimetadataPromises);
+  
+  const defimetadataMap = new Map(
+    defimetadataResults.map(result => [result.proof_link, result.image])
+  );
+  
+  const defillamametadataResults = await Promise.all(defillamametadataPromises);
+
+  const defillamametadataMap = new Map(
+    defillamametadataResults.map(result => [result.link, result.image])
+  );
+
   var projects = oldData['__collections__']['projects']
 
   var projectKeyList = Object.keys(projects)
@@ -201,15 +247,8 @@ async function makingData() {
     projectValueList.push(pValue)
     newProjects[pKey] = pValue
 
-    var image = ""
-    if (defi.proof_link !== undefined && defi.proof_link != null) {
-      try {
-        const metaData = await getMetaData(defi.proof_link)
-        image = metaData.image
-      } catch (error) {
+    const image = defi.proof_link ? defimetadataMap.get(defi.proof_link) : "";
 
-      }
-    }
     var randomKey = generateRandomString(20)
     var addItem = {
       "source": defi.proof_link,
@@ -242,15 +281,7 @@ async function makingData() {
 
     const nHIndex = tempHacks.findIndex(nh => nh.project_name === defillama.name && nh.amount === 1000000 * (defillama.amount))
     if (nHIndex == -1) {
-      var image = ""
-      if (defillama.link !== undefined && defillama.link != null) {
-        try {
-          const metaData = await getMetaData(defillama.link)
-          image = metaData.image
-        } catch (error) {
-
-        }
-      }
+      const image = defillama.link ? defillamametadataMap.get(defillama.link) : "";
       var randomKey = generateRandomString(20)
       var addItem = {
         "source": defillama.link,
