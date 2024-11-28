@@ -130,7 +130,7 @@ app.get('/api/get_certik', async (req, res) => {
 
         await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
 
-        await page.goto(certikURL, { waitUntil: 'domcontentloaded', timeout: 10000 });
+        await page.goto(certikURL, { waitUntil: 'domcontentloaded', timeout: 120000 });
         const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
         totalCount = data.page.total;
 
@@ -139,7 +139,7 @@ app.get('/api/get_certik', async (req, res) => {
                 await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
             }
             const url = certikURL + i;
-            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
             const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
             if (data) {
                 certikData = certikData.concat(data.items)
