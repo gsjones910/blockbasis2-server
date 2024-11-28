@@ -114,11 +114,28 @@ app.get('/api/get_defillama', async (req, res) => {
     res.json({ count: defillamaData.length, data: defillamaData });
 });
 
+async function fetchDataWithRetry(page, url, maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+            const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+            return data;
+        } catch (error) {
+            if (attempt === maxRetries) {
+                return null;
+            }
+            
+            const waitTime = Math.pow(2, attempt) * 1000;
+            console.log(`Attempt ${attempt} failed. Retrying in ${waitTime/1000} seconds...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+    }
+}
+
 app.get('/api/get_certik', async (req, res) => {
     const certikURL = "https://skynet.certik.com/api/leaderboard-all-projects/query-leaderboard-projects?isClientOnly=true&limit=50&skip="
 
     let certikData = []
-    let successSkip = 0;
     let totalCount = 4000
 
     const browser = await puppeteer.launch();
@@ -134,13 +151,12 @@ app.get('/api/get_certik', async (req, res) => {
             console.log(error)
         }
 
-        await page.goto(certikURL, { waitUntil: 'domcontentloaded', timeout: 120000 });
-        const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+        const data = await fetchDataWithRetry(page, certikURL);
         totalCount = data.page.total;
         console.log('totalCount==========', totalCount)
 
         for (let i = 0; i < totalCount; i += 50) {
-            if (i == 2000 || i == 3000) {
+            if (i == 2500) {
                 try {
                     await page.goto('https://skynet.certik.com/leaderboards/security', { waitUntil: 'domcontentloaded', timeout: 10000 });
                 } catch (error) {
@@ -148,26 +164,16 @@ app.get('/api/get_certik', async (req, res) => {
                 }
             }
             const url = certikURL + i;
-            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
-            const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+
+            const data = await fetchDataWithRetry(page, url);
+
             if (data) {
                 certikData = certikData.concat(data.items)
                 console.log('skip===========', i)
-                successSkip = i;
             }
         }
     } catch (error) {
         console.log(error)
-        for (let i = successSkip + 50; i < totalCount; i += 50) {
-            const url = certikURL + i;
-            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
-            const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
-            if (data) {
-                certikData = certikData.concat(data.items)
-                console.log('skip===========', i)
-                successSkip = i;
-            }
-        }
     }
 
     await browser.close();
