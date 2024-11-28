@@ -27,30 +27,14 @@ app.post('/api/beehiiv_getByEmail', async (req, res) => {
 
 async function getData(url) {
     try {
-        const result = await axios({ method: "get", url: url, headers: {
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36",
-        }});
+        const result = await axios({
+            method: "get", url: url, headers: {
+                "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36",
+            }
+        });
         return result.data;
     } catch (error) {
-        return null;
-    }
-}
-
-async function getDataNN(url) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36');
-
-    try {
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 120000 });
-        const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
-        await browser.close();
-        return data;
-    } catch (error) {
-        console.log(error)
-        await browser.close();
         return null;
     }
 }
@@ -89,14 +73,42 @@ app.get('/api/get_defi', async (req, res) => {
 });
 
 app.get('/api/get_defillama', async (req, res) => {
-    const defillamaURL = "https://defillama.com/_next/data/0.5771133567931961/hacks.json"
-
     let defillamaData = []
 
-    var defillamaRes = await getDataNN(defillamaURL)
-    if (defillamaRes) {
-        defillamaData = defillamaRes.pageProps.data
+    const browser = await puppeteer.launch();
+
+    try {
+        const page = await browser.newPage();
+
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36');
+
+        await page.goto('https://defillama.com/hacks', { waitUntil: 'domcontentloaded', timeout: 10000 });
+
+        const url_num = await page.evaluate(() => {
+            const scripts = document.querySelectorAll('script');
+
+            for (let script of scripts) {
+                if (script.src.includes('_buildManifest.js')) {
+                    const match = script.src.match(/\/(\d+\.\d+)\//);
+                    if (match) {
+                        return match[1];
+                    }
+                }
+            }
+            return null;
+        });
+
+        await page.goto("https://defillama.com/_next/data/" + url_num + "/hacks.json", { waitUntil: 'domcontentloaded', timeout: 10000 });
+
+        const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+        if (data) {
+            defillamaData = data.pageProps.data
+        }
+    } catch (error) {
+        console.log(error)
     }
+
+    await browser.close();
     fs.writeFileSync('./data/hack_defillama.json', JSON.stringify(defillamaData, null, 4));
 
     res.json({ count: defillamaData.length, data: defillamaData });
@@ -116,7 +128,7 @@ app.get('/api/get_certik', async (req, res) => {
 
         await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
 
-        for (let i = 0; i < 4000; i+= 50) {
+        for (let i = 0; i < 4000; i += 50) {
             const url = certikURL + i;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 });
             const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
