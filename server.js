@@ -128,15 +128,24 @@ app.get('/api/get_certik', async (req, res) => {
 
         await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36');
 
-        await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
+        try {
+            await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
+        } catch (error) {
+            console.log(error)
+        }
 
         await page.goto(certikURL, { waitUntil: 'domcontentloaded', timeout: 120000 });
         const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
         totalCount = data.page.total;
+        console.log('totalCount==========', totalCount)
 
         for (let i = 0; i < totalCount; i += 50) {
             if (i == 2000 || i == 3000) {
-                await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
+                try {
+                    await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
+                } catch (error) {
+                    console.log(error)
+                }
             }
             const url = certikURL + i;
             await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
