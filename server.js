@@ -195,6 +195,18 @@ app.get('/api/set_data', async (req, res) => {
     res.json({ data: '' });
 });
 
+app.get('/api/read_audits', async (req, res) => {
+    const audits = fs.readFileSync('./result/audits.json');
+    const auditsData = JSON.parse(audits);
+    res.json({ data: auditsData });
+});
+
+app.get('/api/read_hacks', async (req, res) => {
+    const hacks = fs.readFileSync('./result/hacks.json');
+    const hacksData = JSON.parse(hacks);
+    res.json({ data: hacksData });
+});
+
 app.get('/api/read_projects', async (req, res) => {
     const projects = fs.readFileSync('./result/projects.json');
     const projectsData = JSON.parse(projects);
