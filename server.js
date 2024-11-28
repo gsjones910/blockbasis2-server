@@ -118,7 +118,7 @@ app.get('/api/get_certik', async (req, res) => {
     const certikURL = "https://skynet.certik.com/api/leaderboard-all-projects/query-leaderboard-projects?isClientOnly=true&limit=50&skip="
 
     let certikData = []
-    let successSkip = []
+    let successSkip = 0;
     let totalCount = 4000
 
     const browser = await puppeteer.launch();
@@ -142,7 +142,7 @@ app.get('/api/get_certik', async (req, res) => {
         for (let i = 0; i < totalCount; i += 50) {
             if (i == 2000 || i == 3000) {
                 try {
-                    await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
+                    await page.goto('https://skynet.certik.com/leaderboards/security', { waitUntil: 'domcontentloaded', timeout: 10000 });
                 } catch (error) {
                     console.log(error)
                 }
@@ -153,10 +153,21 @@ app.get('/api/get_certik', async (req, res) => {
             if (data) {
                 certikData = certikData.concat(data.items)
                 console.log('skip===========', i)
+                successSkip = i;
             }
         }
     } catch (error) {
         console.log(error)
+        for (let i = successSkip + 50; i < totalCount; i += 50) {
+            const url = certikURL + i;
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
+            const data = await page.evaluate(() => JSON.parse(document.querySelector('pre').textContent));
+            if (data) {
+                certikData = certikData.concat(data.items)
+                console.log('skip===========', i)
+                successSkip = i;
+            }
+        }
     }
 
     await browser.close();
