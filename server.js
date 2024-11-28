@@ -190,6 +190,27 @@ app.get('/api/read_defisafety', async (req, res) => {
     res.json({ count: links_defisafety.length, data: links_defisafety });
 });
 
+app.get('/api/read_defi', async (req, res) => {
+    const linksData_defi = fs.readFileSync('./data/hack_defi.json');
+    const links_defi = JSON.parse(linksData_defi);
+
+    res.json({ count: links_defi.length, data: links_defi });
+});
+
+app.get('/api/read_defillama', async (req, res) => {
+    const linksData_defillama = fs.readFileSync('./data/hack_defillama.json');
+    const links_defillama = JSON.parse(linksData_defillama);
+
+    res.json({ count: links_defillama.length, data: links_defillama });
+});
+
+app.get('/api/read_certik', async (req, res) => {
+    const linksData_certik = fs.readFileSync('./data/audit_certik.json');
+    const links_certik = JSON.parse(linksData_certik);
+
+    res.json({ count: links_certik.length, data: links_certik });
+});
+
 app.get('/api/set_data', async (req, res) => {
     await makingData();
     res.json({ data: '' });
