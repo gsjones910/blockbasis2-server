@@ -135,7 +135,7 @@ app.get('/api/get_certik', async (req, res) => {
         totalCount = data.page.total;
 
         for (let i = 0; i < totalCount; i += 50) {
-            if (i == 2000) {
+            if (i == 2000 || i == 3000) {
                 await page.goto('https://skynet.certik.com/leaderboards/pre-launch', { waitUntil: 'domcontentloaded', timeout: 10000 });
             }
             const url = certikURL + i;
