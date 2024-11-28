@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer');
 const { BeehiivClient } = require('@beehiiv/sdk');
 const app = express();
 const port = 3000;
+const fs = require('fs');
 
 app.use(cors({
     origin: ['https://scan.blockbasis.com', 'https://walletscanner.com']
@@ -68,8 +69,16 @@ app.get('/api/get_defisafety', async (req, res) => {
             defisafetyData = defisafetyData.concat(result.data)
         }
     }
+    fs.writeFileSync('./data/audit_defisafety.json', JSON.stringify(defisafetyData, null, 4));
 
     res.json({ data: defisafetyData });
+});
+
+app.get('/api/read_defisafety', async (req, res) => {
+    const linksData_defisafety = fs.readFileSync('./data/audit_defisafety.json');
+    const links_defisafety = JSON.parse(linksData_defisafety);
+
+    res.json({ data: links_defisafety });
 });
 
 app.get('/api/get_defi', async (req, res) => {
