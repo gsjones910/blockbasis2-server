@@ -195,6 +195,12 @@ app.get('/api/set_data', async (req, res) => {
     res.json({ data: '' });
 });
 
+app.get('/api/read_projects', async (req, res) => {
+    const projects = fs.readFileSync('./result/projects.json');
+    const projectsData = JSON.parse(projects);
+    res.json({ data: projectsData });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

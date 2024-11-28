@@ -290,6 +290,7 @@ async function makingData() {
   oldData['__collections__']['hacks'] = newHacks;
   oldData['__collections__']['projects'] = newProjects;
   fs.writeFileSync('./result/data.json', JSON.stringify(oldData, null, 4));
+  console.log('making data end!')
 };
 
 module.exports = { makingData };
