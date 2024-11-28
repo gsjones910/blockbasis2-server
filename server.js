@@ -71,14 +71,7 @@ app.get('/api/get_defisafety', async (req, res) => {
     }
     fs.writeFileSync('./data/audit_defisafety.json', JSON.stringify(defisafetyData, null, 4));
 
-    res.json({ data: defisafetyData });
-});
-
-app.get('/api/read_defisafety', async (req, res) => {
-    const linksData_defisafety = fs.readFileSync('./data/audit_defisafety.json');
-    const links_defisafety = JSON.parse(linksData_defisafety);
-
-    res.json({ data: links_defisafety });
+    res.json({ count: defisafetyData.length, data: defisafetyData });
 });
 
 app.get('/api/get_defi', async (req, res) => {
@@ -90,8 +83,9 @@ app.get('/api/get_defi', async (req, res) => {
     if (defiRes) {
         defiData = defiRes.items
     }
+    fs.writeFileSync('./data/hack_defi.json', JSON.stringify(defiData, null, 4));
 
-    res.json({ data: defiData });
+    res.json({ count: defiData.length, data: defiData });
 });
 
 app.get('/api/get_defillama', async (req, res) => {
@@ -103,8 +97,9 @@ app.get('/api/get_defillama', async (req, res) => {
     if (defillamaRes) {
         defillamaData = defillamaRes.pageProps.data
     }
+    fs.writeFileSync('./data/hack_defillama.json', JSON.stringify(defillamaData, null, 4));
 
-    res.json({ data: defillamaData });
+    res.json({ count: defillamaData.length, data: defillamaData });
 });
 
 app.get('/api/get_certik', async (req, res) => {
@@ -134,8 +129,16 @@ app.get('/api/get_certik', async (req, res) => {
     }
 
     await browser.close();
+    fs.writeFileSync('./data/audit_certik.json', JSON.stringify(certikData, null, 4));
 
-    res.json({ data: certikData });
+    res.json({ count: certikData.length, data: certikData });
+});
+
+app.get('/api/read_defisafety', async (req, res) => {
+    const linksData_defisafety = fs.readFileSync('./data/audit_defisafety.json');
+    const links_defisafety = JSON.parse(linksData_defisafety);
+
+    res.json({ count: links_defisafety.length, data: links_defisafety });
 });
 
 app.listen(port, () => {
