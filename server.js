@@ -6,6 +6,7 @@ const { BeehiivClient } = require('@beehiiv/sdk');
 const app = express();
 const port = 3000;
 const fs = require('fs');
+const { makingData } = require('./makingData');
 
 app.use(cors({
     origin: ['https://scan.blockbasis.com', 'https://walletscanner.com']
@@ -187,6 +188,11 @@ app.get('/api/read_defisafety', async (req, res) => {
     const links_defisafety = JSON.parse(linksData_defisafety);
 
     res.json({ count: links_defisafety.length, data: links_defisafety });
+});
+
+app.get('/api/set_data', async (req, res) => {
+    await makingData();
+    res.json({ data: '' });
 });
 
 app.listen(port, () => {
