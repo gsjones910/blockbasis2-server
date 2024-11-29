@@ -15,8 +15,8 @@ const links_defi = JSON.parse(linksData_defi);
 const linksData_defillama = fs.readFileSync('./data/hack_defillama.json');
 const links_defillama = JSON.parse(linksData_defillama);
 
-const old_data = fs.readFileSync('./result/data.json');
-var oldData = JSON.parse(old_data);
+const projects_data = fs.readFileSync('./result/projects.json');
+var projects = JSON.parse(projects_data);
 
 const defimetadataPromises = links_defi
   .filter(defi => defi.proof_link && defi.proof_link !== null)
@@ -64,8 +64,6 @@ async function makingData() {
   const defillamametadataMap = new Map(
     defillamametadataResults.map(result => [result.link, result.image])
   );
-
-  var projects = oldData['__collections__']['projects']
 
   var projectKeyList = Object.keys(projects)
   var projectValueList = Object.values(projects)
@@ -317,10 +315,6 @@ async function makingData() {
   fs.writeFileSync('./result/audits.json', JSON.stringify(newAudits, null, 4));
   fs.writeFileSync('./result/hacks.json', JSON.stringify(newHacks, null, 4));
   fs.writeFileSync('./result/projects.json', JSON.stringify(newProjects, null, 4));
-  oldData['__collections__']['audits'] = newAudits;
-  oldData['__collections__']['hacks'] = newHacks;
-  oldData['__collections__']['projects'] = newProjects;
-  fs.writeFileSync('./result/data.json', JSON.stringify(oldData, null, 4));
   console.log('making data end!')
 };
 
